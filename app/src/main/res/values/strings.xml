@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">RickMorty</string>
+    <string name="species_gender">%s - %s</string>
 </resources>

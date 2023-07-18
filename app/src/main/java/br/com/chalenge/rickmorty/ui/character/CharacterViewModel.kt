@@ -5,12 +5,14 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import androidx.paging.PagingSource
 import androidx.paging.cachedIn
 import androidx.paging.map
 import br.com.chalenge.rickmorty.doman.model.CharacterModel
 import br.com.chalenge.rickmorty.doman.usecase.GetCharactersUseCase
 import br.com.chalenge.rickmorty.ui.character.mapper.CharacterModelToUiModelMapper
 import br.com.chalenge.rickmorty.data.repository.paging.PagingMediator
+import br.com.chalenge.rickmorty.ui.character.paging.CharacterPaging
 import br.com.chalenge.rickmorty.ui.character.uimodel.CharacterUiModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,7 +30,14 @@ class CharacterViewModel(
     val state = _state.asStateFlow()
 
     fun loadCharacters(): Flow<PagingData<CharacterUiModel>> {
-        return getCharactersUseCase().map { paging ->
+        return Pager(
+            PagingConfig(
+                pageSize = 20,
+                enablePlaceholders = true,
+            )
+        ) {
+            CharacterPaging(getCharactersUseCase).getCharacters()
+        }.flow.map { paging ->
             paging.map { model -> characterModelToUiModelMapper.converter(model) }
         }.cachedIn(viewModelScope)
     }

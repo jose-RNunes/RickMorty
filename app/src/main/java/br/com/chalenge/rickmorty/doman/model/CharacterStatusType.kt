@@ -10,7 +10,7 @@ enum class CharacterStatusType {
     companion object {
         fun find(characterStatus: String): CharacterStatusType {
             return values().firstOrNull { status ->
-                status.name == characterStatus.capitalizeText()
+                status.name == characterStatus.uppercase()
             } ?: UNKNOWN
         }
     }

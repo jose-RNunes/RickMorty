@@ -1,19 +1,18 @@
 package br.com.chalenge.rickmorty.doman.usecase
 
-import androidx.paging.PagingData
 import br.com.chalenge.rickmorty.doman.model.CharacterModel
+import br.com.chalenge.rickmorty.doman.model.PageInfoModel
 import br.com.chalenge.rickmorty.doman.repository.CharacterRepository
-import kotlinx.coroutines.flow.Flow
 
 interface GetCharactersUseCase {
 
-    operator fun invoke(): Flow<PagingData<CharacterModel>>
+    suspend operator fun invoke(page: Int): PageInfoModel
 }
 
 class GetCharacterUseCaseImpl(
     private val characterRepository: CharacterRepository
 ) : GetCharactersUseCase {
-    override fun invoke(): Flow<PagingData<CharacterModel>> {
-        return characterRepository.getCharacters()
+    override suspend fun invoke(page: Int): PageInfoModel {
+        return characterRepository.getCharacters(page)
     }
 }
