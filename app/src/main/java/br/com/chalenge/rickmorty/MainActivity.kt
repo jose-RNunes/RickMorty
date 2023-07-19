@@ -7,9 +7,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -17,20 +19,18 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import androidx.paging.compose.LazyPagingItems
-import androidx.paging.compose.collectAsLazyPagingItems
 import br.com.chalenge.rickmorty.ui.character.detail.CharacterDetailEvent
 import br.com.chalenge.rickmorty.ui.character.detail.CharacterDetailScreen
 import br.com.chalenge.rickmorty.ui.character.detail.CharacterDetailViewModel
 import br.com.chalenge.rickmorty.ui.characters.CharacterEvent
 import br.com.chalenge.rickmorty.ui.characters.CharacterViewModel
 import br.com.chalenge.rickmorty.ui.characters.CharactersScreen
-import br.com.chalenge.rickmorty.ui.characters.uimodel.CharacterUiModel
 import br.com.chalenge.rickmorty.ui.navigation.AppRoute
 import br.com.chalenge.rickmorty.ui.navigation.ScreenRoute
 import br.com.chalenge.rickmorty.ui.theme.RickMortyTheme
-import org.koin.androidx.compose.navigation.koinNavViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,18 +61,17 @@ class MainActivity : ComponentActivity() {
 
     private fun NavGraphBuilder.charactersScreen(navController: NavHostController) {
         composable(ScreenRoute.CHARACTER_SCREEN.route) {
-            val characterViewModel: CharacterViewModel = koinNavViewModel()
-            val characters: LazyPagingItems<CharacterUiModel> = characterViewModel
-                .loadCharacters()
-                .collectAsLazyPagingItems()
+            val characterViewModel = hiltViewModel<CharacterViewModel>()
 
             val state by characterViewModel.state.collectAsState()
 
-            CharactersScreen(characters = characters) { id ->
+            characterViewModel.handleEvent(CharacterEvent.GetCharacters)
+
+            CharactersScreen(state) { id ->
                 characterViewModel.handleEvent(CharacterEvent.OnCharacterSelected(id))
             }
 
-            if (state.navigateToDetail && state.characterSelectedId != null) {
+            if (state.navigateToDetail) {
                 characterViewModel.handleEvent(CharacterEvent.OnNavigated)
                 val safeCharacterId = state.characterSelectedId ?: 0
                 navController.navigate(
@@ -90,11 +89,13 @@ class MainActivity : ComponentActivity() {
 
             val id = backStackEntry.arguments?.getInt("id") ?: 0
 
-            val characterDetailViewModel: CharacterDetailViewModel = koinNavViewModel()
+            val characterDetailViewModel = hiltViewModel<CharacterDetailViewModel>()
 
             val state by characterDetailViewModel.state.collectAsState()
 
-            characterDetailViewModel.handleEvent(CharacterDetailEvent.GetCharacter(id = id))
+            LaunchedEffect(key1 = id) {
+                characterDetailViewModel.handleEvent(CharacterDetailEvent.GetCharacter(id = id))
+            }
 
             if (state.showData()) {
                 CharacterDetailScreen(

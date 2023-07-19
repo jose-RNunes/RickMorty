@@ -4,8 +4,9 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import br.com.chalenge.rickmorty.doman.model.CharacterModel
 import br.com.chalenge.rickmorty.doman.usecase.GetCharactersUseCase
+import javax.inject.Inject
 
-class CharacterPaging(private val getCharactersUseCase: GetCharactersUseCase) {
+class CharacterPaging @Inject constructor(private val getCharactersUseCase: GetCharactersUseCase) {
 
     fun getCharacters(): PagingSource<Int, CharacterModel> {
         return object : PagingSource<Int, CharacterModel>() {

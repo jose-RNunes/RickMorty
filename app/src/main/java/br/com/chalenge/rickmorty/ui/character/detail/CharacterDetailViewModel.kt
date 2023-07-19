@@ -6,12 +6,15 @@ import br.com.chalenge.rickmorty.doman.model.CharacterModel
 import br.com.chalenge.rickmorty.doman.usecase.GetCharacterUseCase
 import br.com.chalenge.rickmorty.ui.characters.CharacterState
 import br.com.chalenge.rickmorty.ui.characters.mapper.CharacterModelToUiModelMapper
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class CharacterDetailViewModel(
+@HiltViewModel
+class CharacterDetailViewModel @Inject constructor(
     private val getCharacterUseCase: GetCharacterUseCase,
     private val characterModelToUiModelMapper: CharacterModelToUiModelMapper
     ): ViewModel() {

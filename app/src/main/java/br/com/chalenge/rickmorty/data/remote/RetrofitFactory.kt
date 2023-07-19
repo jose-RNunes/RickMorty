@@ -5,7 +5,7 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
-object Retrofit {
+object RetrofitFactory {
 
     fun provideRetrofit(baseUrl: String, moshi: Moshi, client: OkHttpClient): Retrofit {
        return Retrofit.Builder()

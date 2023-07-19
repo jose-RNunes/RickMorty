@@ -15,19 +15,24 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import br.com.chalenge.rickmorty.ui.characters.uimodel.CharacterUiModel
 import coil.compose.AsyncImage
 
 @Composable
 fun CharactersScreen(
-    characters: LazyPagingItems<CharacterUiModel>,
+    state: CharacterState,
     onCharacterSelected: (Int) -> Unit
 ) {
+
+    val characters =  state.characters?.collectAsLazyPagingItems() ?: return
+
     LazyColumn {
         items(characters.itemCount) { index ->
             characters[index]?.let { character ->
