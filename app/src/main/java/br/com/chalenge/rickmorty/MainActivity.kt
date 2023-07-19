@@ -3,37 +3,33 @@ package br.com.chalenge.rickmorty
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.items
-import br.com.chalenge.rickmorty.ui.character.CharacterEvent
-import br.com.chalenge.rickmorty.ui.character.CharacterViewModel
-import br.com.chalenge.rickmorty.ui.character.uimodel.CharacterUiModel
+import br.com.chalenge.rickmorty.ui.character.detail.CharacterDetailEvent
+import br.com.chalenge.rickmorty.ui.character.detail.CharacterDetailScreen
+import br.com.chalenge.rickmorty.ui.character.detail.CharacterDetailViewModel
+import br.com.chalenge.rickmorty.ui.characters.CharacterEvent
+import br.com.chalenge.rickmorty.ui.characters.CharacterViewModel
+import br.com.chalenge.rickmorty.ui.characters.CharactersScreen
+import br.com.chalenge.rickmorty.ui.characters.uimodel.CharacterUiModel
+import br.com.chalenge.rickmorty.ui.navigation.AppRoute
+import br.com.chalenge.rickmorty.ui.navigation.ScreenRoute
 import br.com.chalenge.rickmorty.ui.theme.RickMortyTheme
-import coil.compose.AsyncImage
-import org.koin.androidx.viewmodel.ext.android.getViewModel
+import org.koin.androidx.compose.navigation.koinNavViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,63 +41,66 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val characterViewModel: CharacterViewModel = getViewModel()
-
-                    characterViewModel.handleEvent(CharacterEvent.GetCharacters)
-
-                    val characters: LazyPagingItems<CharacterUiModel> =
-                        characterViewModel.loadCharacters().collectAsLazyPagingItems()
-
-                    LazyColumn {
-                        items(characters.itemCount) { index ->
-                            characters[index]?.let { character ->
-                                CharacterItem(
-                                    character = character,
-                                    onSelectCharacter = {}
-                                )
-                            }
-                        }
-                    }
-
+                    navigationApp()
                 }
             }
         }
     }
 
     @Composable
-    fun CharacterItem(
-        modifier: Modifier = Modifier,
-        character: CharacterUiModel,
-        onSelectCharacter: (Int) -> Unit,
-    ) {
-        Card(
-            modifier = modifier
-                .fillMaxWidth()
-                .clickable(onClick = { onSelectCharacter(character.id) })
-                .padding(8.dp)
+    fun navigationApp() {
+        val navController = rememberNavController()
+        NavHost(
+            navController = navController,
+            startDestination = ScreenRoute.CHARACTER_SCREEN.route
         ) {
-            Row(modifier = Modifier.fillMaxWidth()) {
-                AsyncImage(
-                    model = character.image,
-                    modifier = Modifier.size(128.dp),
-                    contentDescription = null
+            charactersScreen(navController)
+            characterDetailScreen(navController)
+        }
+    }
+
+    private fun NavGraphBuilder.charactersScreen(navController: NavHostController) {
+        composable(ScreenRoute.CHARACTER_SCREEN.route) {
+            val characterViewModel: CharacterViewModel = koinNavViewModel()
+            val characters: LazyPagingItems<CharacterUiModel> = characterViewModel
+                .loadCharacters()
+                .collectAsLazyPagingItems()
+
+            val state by characterViewModel.state.collectAsState()
+
+            CharactersScreen(characters = characters) { id ->
+                characterViewModel.handleEvent(CharacterEvent.OnCharacterSelected(id))
+            }
+
+            if (state.navigateToDetail && state.characterSelectedId != null) {
+                characterViewModel.handleEvent(CharacterEvent.OnNavigated)
+                val safeCharacterId = state.characterSelectedId ?: 0
+                navController.navigate(
+                    AppRoute.CharacterDetailsScreen(safeCharacterId).getCalculatedRoute()
                 )
-                Column(Modifier.padding(8.dp)) {
-                    Text(character.name, style = MaterialTheme.typography.bodyMedium)
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(10.dp)
-                                .clip(CircleShape)
-                                .background(character.statusColor)
-                        )
-                        Text(character.status)
-                    }
-                    Text(character.species)
-                }
+            }
+        }
+    }
+
+    private fun NavGraphBuilder.characterDetailScreen(navHostController: NavHostController) {
+        composable(
+            ScreenRoute.CHARACTER_DETAIL_SCREEN.route,
+            arguments = listOf(navArgument("id") { type = NavType.IntType })
+        ) { backStackEntry ->
+
+            val id = backStackEntry.arguments?.getInt("id") ?: 0
+
+            val characterDetailViewModel: CharacterDetailViewModel = koinNavViewModel()
+
+            val state by characterDetailViewModel.state.collectAsState()
+
+            characterDetailViewModel.handleEvent(CharacterDetailEvent.GetCharacter(id = id))
+
+            if (state.showData()) {
+                CharacterDetailScreen(
+                    state = state,
+                    onBackClick = { }
+                )
             }
         }
     }

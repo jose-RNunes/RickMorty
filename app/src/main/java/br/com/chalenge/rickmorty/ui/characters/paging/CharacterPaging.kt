@@ -1,4 +1,4 @@
-package br.com.chalenge.rickmorty.ui.character.paging
+package br.com.chalenge.rickmorty.ui.characters.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState

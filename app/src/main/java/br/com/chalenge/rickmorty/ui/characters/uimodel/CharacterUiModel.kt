@@ -1,4 +1,4 @@
-package br.com.chalenge.rickmorty.ui.character.uimodel
+package br.com.chalenge.rickmorty.ui.characters.uimodel
 
 import androidx.compose.ui.graphics.Color
 

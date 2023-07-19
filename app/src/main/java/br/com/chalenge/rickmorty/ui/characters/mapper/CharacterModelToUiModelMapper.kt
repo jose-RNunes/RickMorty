@@ -1,11 +1,10 @@
-package br.com.chalenge.rickmorty.ui.character.mapper
+package br.com.chalenge.rickmorty.ui.characters.mapper
 
 import androidx.compose.ui.graphics.Color
 import br.com.chalenge.rickmorty.R
 import br.com.chalenge.rickmorty.doman.model.CharacterModel
 import br.com.chalenge.rickmorty.doman.model.CharacterStatusType
-import br.com.chalenge.rickmorty.ui.character.uimodel.CharacterUiModel
-import br.com.chalenge.rickmorty.ui.theme.Purple80
+import br.com.chalenge.rickmorty.ui.characters.uimodel.CharacterUiModel
 import br.com.chalenge.rickmorty.utils.Mapper
 import br.com.chalenge.rickmorty.utils.ResourceManager
 import br.com.chalenge.rickmorty.utils.capitalizeText

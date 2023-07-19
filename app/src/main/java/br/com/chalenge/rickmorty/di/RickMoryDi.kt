@@ -17,11 +17,14 @@ import br.com.chalenge.rickmorty.data.repository.paging.PagingMediator
 import br.com.chalenge.rickmorty.database.AppDataBase
 import br.com.chalenge.rickmorty.database.AppDataBaseFactory
 import br.com.chalenge.rickmorty.doman.repository.CharacterRepository
+import br.com.chalenge.rickmorty.doman.usecase.GetCharacterUseCase
 import br.com.chalenge.rickmorty.doman.usecase.GetCharacterUseCaseImpl
+import br.com.chalenge.rickmorty.doman.usecase.GetCharactersUseCaseImpl
 import br.com.chalenge.rickmorty.doman.usecase.GetCharactersUseCase
-import br.com.chalenge.rickmorty.ui.character.CharacterViewModel
-import br.com.chalenge.rickmorty.ui.character.mapper.CharaCharacterModelToUiModelMapperImpl
-import br.com.chalenge.rickmorty.ui.character.mapper.CharacterModelToUiModelMapper
+import br.com.chalenge.rickmorty.ui.character.detail.CharacterDetailViewModel
+import br.com.chalenge.rickmorty.ui.characters.CharacterViewModel
+import br.com.chalenge.rickmorty.ui.characters.mapper.CharaCharacterModelToUiModelMapperImpl
+import br.com.chalenge.rickmorty.ui.characters.mapper.CharacterModelToUiModelMapper
 import br.com.chalenge.rickmorty.utils.ResourceManager
 import br.com.chalenge.rickmorty.utils.ResourceManagerImpl
 import com.squareup.moshi.Moshi
@@ -56,13 +59,15 @@ val dataModule = module {
             appDataBase = get(),
             rickMortyApi = get(),
             characterEntityToModelMapper = get(),
-            characterResultResponseToModelMapper = get()
+            characterResultResponseToModelMapper = get(),
+            characterResponseToModelMapper = get()
         )
     }
 }
 
 val domainModule = module {
-    factory<GetCharactersUseCase> { GetCharacterUseCaseImpl(characterRepository = get()) }
+    factory<GetCharactersUseCase> { GetCharactersUseCaseImpl(characterRepository = get()) }
+    factory<GetCharacterUseCase> { GetCharacterUseCaseImpl(characterRepository = get()) }
 }
 
 val uiModule = module {
@@ -73,6 +78,12 @@ val uiModule = module {
     viewModel {
         CharacterViewModel(
             getCharactersUseCase = get(),
+            characterModelToUiModelMapper = get()
+        )
+    }
+    viewModel {
+        CharacterDetailViewModel(
+            getCharacterUseCase = get(),
             characterModelToUiModelMapper = get()
         )
     }

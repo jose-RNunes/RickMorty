@@ -1,7 +1,8 @@
 [versions]
 kotlin = "1.8.10"
 android_gradle_plugin = "7.4.2"
-koin = "3.4.0"
+koin = "3.4.2"
+koin_compose = "3.4.5"
 
 #Test
 test_junit = "4.13.2"
@@ -102,7 +103,8 @@ compose_junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
 # Koin
 koin_test = { group = "io.insert-koin", name = "koin-test-junit4", version.ref = "koin" }
 koin_android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
-koin_compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koin" }
+koin_compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koin_compose" }
+koin_navigation = { group = "io.insert-koin", name = "koin-androidx-compose-navigation", version.ref = "koin_compose" }
 
 #Networking
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
@@ -121,7 +123,7 @@ room_paging = { group = "androidx.room", name = "room-paging", version.ref = "ro
 compose = ["compose.ui", "compose.material3","compose_pagging", "compose.lifecycle", "compose.navigation", "compose.activity", "compose.ui.tooling"]
 composetest = ["compose.uitest", "compose.junit4", "compose.manifest", "compose.ui.test"]
 networking = ["retrofit", "moshi", "moshi_converter", "okhttp", "interceptor"]
-koin = ["koin_android", "koin_compose"]
+koin = ["koin_android", "koin_compose", "koin_navigation"]
 test = ["junit", "mockk", "mockk_android", "viewmodel_test", "koin_test"]
 androidSupport = ["androidx_core", "androidx_appcompat", "androidx_dynamicanimation","google_material"]
 kotlin = ["androidx_core", "kotlin_stdlib", "kotlin_reflect"]
