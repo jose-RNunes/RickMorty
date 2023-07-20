@@ -5,10 +5,11 @@ import br.com.chalenge.rickmorty.doman.model.CharacterModel
 import br.com.chalenge.rickmorty.doman.model.CharacterStatusType
 import br.com.chalenge.rickmorty.doman.model.GenderType
 import br.com.chalenge.rickmorty.utils.Mapper
+import javax.inject.Inject
 
 interface CharacterEntityToModelMapper : Mapper<CharacterEntity, CharacterModel>
 
-class CharacterEntityToModelMapperImpl : CharacterEntityToModelMapper {
+class CharacterEntityToModelMapperImpl @Inject constructor(): CharacterEntityToModelMapper {
     override fun converter(from: CharacterEntity): CharacterModel {
         return CharacterModel(
             id = from.id,

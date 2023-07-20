@@ -65,8 +65,6 @@ class MainActivity : ComponentActivity() {
 
             val state by characterViewModel.state.collectAsState()
 
-            characterViewModel.handleEvent(CharacterEvent.GetCharacters)
-
             CharactersScreen(state) { id ->
                 characterViewModel.handleEvent(CharacterEvent.OnCharacterSelected(id))
             }
@@ -78,6 +76,8 @@ class MainActivity : ComponentActivity() {
                     AppRoute.CharacterDetailsScreen(safeCharacterId).getCalculatedRoute()
                 )
             }
+
+            characterViewModel.handleEvent(CharacterEvent.GetCharacters)
         }
     }
 

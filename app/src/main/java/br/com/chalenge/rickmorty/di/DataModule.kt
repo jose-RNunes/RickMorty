@@ -1,78 +1,42 @@
 package br.com.chalenge.rickmorty.di
 
+import android.content.Context
 import br.com.chalenge.rickmorty.data.mapper.CharacterResponseToModelMapper
 import br.com.chalenge.rickmorty.data.mapper.CharacterResponseToModelMapperImpl
 import br.com.chalenge.rickmorty.data.mapper.CharacterResultResponseToModelMapper
 import br.com.chalenge.rickmorty.data.mapper.CharacterResultResponseToModelMapperImpl
-import br.com.chalenge.rickmorty.data.remote.MoshiFactory
-import br.com.chalenge.rickmorty.data.remote.OkHttpClientFactory
-import br.com.chalenge.rickmorty.data.remote.RetrofitFactory
-import br.com.chalenge.rickmorty.data.remote.RickMortyApi
+import br.com.chalenge.rickmorty.data.remote.ErrorInterceptor
+import br.com.chalenge.rickmorty.data.remote.ErrorInterceptorImpl
 import br.com.chalenge.rickmorty.data.repository.CharacterRepositoryImpl
 import br.com.chalenge.rickmorty.doman.repository.CharacterRepository
-import com.squareup.moshi.Moshi
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import okhttp3.OkHttpClient
-import retrofit2.Retrofit
-import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-class DataModule {
+abstract class DataModule {
 
-    @Provides
-    fun providesCharacterRepository(
-        rickMortyApi: RickMortyApi,
-        characterResultResponseToModelMapper: CharacterResultResponseToModelMapper,
-        characterResponseToModelMapper: CharacterResponseToModelMapper
-    ): CharacterRepository {
-        return CharacterRepositoryImpl(
-            rickMortyApi = rickMortyApi,
-            characterResultResponseToModelMapper = characterResultResponseToModelMapper,
-            characterResponseToModelMapper = characterResponseToModelMapper
-        )
-    }
+    @Binds
+    abstract fun providesContext(@ApplicationContext context: Context): Context
 
-    @Provides
-    fun providesCharacterResponseToModelMapper(): CharacterResponseToModelMapper {
-        return CharacterResponseToModelMapperImpl()
-    }
+    @Binds
+    abstract fun providesCharacterRepository(
+        characterRepositoryImpl: CharacterRepositoryImpl
+    ): CharacterRepository
 
-    @Provides
-    fun providesCharacterResultResponseToModelMapper(
-        characterResponseToModelMapper: CharacterResponseToModelMapper
-    ): CharacterResultResponseToModelMapper {
-        return CharacterResultResponseToModelMapperImpl(characterResponseToModelMapper)
-    }
+    @Binds
+    abstract fun providesCharacterResponseToModelMapper(
+        characterResponseToModelMapperImpl: CharacterResponseToModelMapperImpl
+    ): CharacterResponseToModelMapper
 
-    @Singleton
-    @Provides
-    fun providesRickMortyApi(retrofit: Retrofit): RickMortyApi {
-        return retrofit.create(RickMortyApi::class.java)
-    }
+    @Binds
+    abstract fun providesCharacterResultResponseToModelMapper(
+        characterResultResponseToModelMapperImpl: CharacterResultResponseToModelMapperImpl
+    ): CharacterResultResponseToModelMapper
 
-    @Singleton
-    @Provides
-    fun providesRetrofit(moshi: Moshi, okHttpClient: OkHttpClient): Retrofit {
-        return RetrofitFactory.provideRetrofit(
-            baseUrl = "https://rickandmortyapi.com/api/",
-            moshi = moshi,
-            client = okHttpClient
-        )
-    }
-
-    @Singleton
-    @Provides
-    fun providesMoshi(): Moshi {
-        return MoshiFactory.build()
-    }
-
-    @Singleton
-    @Provides
-    fun providesHttpClient(): OkHttpClient {
-        return OkHttpClientFactory.provideOkHttpClient()
-    }
+    @Binds
+    abstract fun bindsErrorInterceptor(errorInterceptor: ErrorInterceptorImpl): ErrorInterceptor
 }

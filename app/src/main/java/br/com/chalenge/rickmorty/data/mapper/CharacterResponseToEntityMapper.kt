@@ -3,10 +3,11 @@ package br.com.chalenge.rickmorty.data.mapper
 import br.com.chalenge.rickmorty.data.entity.CharacterEntity
 import br.com.chalenge.rickmorty.data.response.CharacterResponse
 import br.com.chalenge.rickmorty.utils.Mapper
+import javax.inject.Inject
 
 interface CharacterResponseToEntityMapper : Mapper<CharacterResponse, CharacterEntity>
 
-class CharacterResponseToEntityMapperImpl : CharacterResponseToEntityMapper {
+class CharacterResponseToEntityMapperImpl @Inject constructor() : CharacterResponseToEntityMapper {
     override fun converter(from: CharacterResponse): CharacterEntity {
         return CharacterEntity(
             id = from.id,

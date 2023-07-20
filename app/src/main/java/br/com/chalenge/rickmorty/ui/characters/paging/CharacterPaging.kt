@@ -11,18 +11,22 @@ class CharacterPaging @Inject constructor(private val getCharactersUseCase: GetC
     fun getCharacters(): PagingSource<Int, CharacterModel> {
         return object : PagingSource<Int, CharacterModel>() {
             override suspend fun load(params: LoadParams<Int>): LoadResult<Int, CharacterModel> {
-                val pageNumber = params.key ?: 0
+                return try {
+                    val pageNumber = params.key ?: 0
 
-                val pageInfoModel = getCharactersUseCase(pageNumber)
+                    val pageInfoModel = getCharactersUseCase(pageNumber)
 
-                val prevKey = if (pageNumber > 0) pageNumber - 1 else null
-                val nextKey = if (pageInfoModel.next != null) pageNumber + 1 else null
+                    val prevKey = if (pageNumber > 0) pageNumber - 1 else null
+                    val nextKey = if (pageInfoModel.next != null) pageNumber + 1 else null
 
-                return LoadResult.Page(
-                    data = pageInfoModel.characters,
-                    prevKey = prevKey,
-                    nextKey = nextKey
-                )
+                    return LoadResult.Page(
+                        data = pageInfoModel.characters,
+                        prevKey = prevKey,
+                        nextKey = nextKey
+                    )
+                } catch (e: Exception) {
+                    LoadResult.Error(e)
+                }
             }
 
             override fun getRefreshKey(state: PagingState<Int, CharacterModel>): Int? {

@@ -8,10 +8,11 @@ import br.com.chalenge.rickmorty.ui.characters.uimodel.CharacterUiModel
 import br.com.chalenge.rickmorty.utils.Mapper
 import br.com.chalenge.rickmorty.utils.ResourceManager
 import br.com.chalenge.rickmorty.utils.capitalizeText
+import javax.inject.Inject
 
 interface CharacterModelToUiModelMapper : Mapper<CharacterModel, CharacterUiModel>
 
-internal class CharaCharacterModelToUiModelMapperImpl(
+class CharaCharacterModelToUiModelMapperImpl @Inject constructor(
     private val resourceManager: ResourceManager
 ) : CharacterModelToUiModelMapper {
     override fun converter(from: CharacterModel): CharacterUiModel {

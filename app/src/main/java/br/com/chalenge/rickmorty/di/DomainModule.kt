@@ -1,26 +1,25 @@
 package br.com.chalenge.rickmorty.di
 
-import br.com.chalenge.rickmorty.doman.repository.CharacterRepository
 import br.com.chalenge.rickmorty.doman.usecase.GetCharacterUseCase
 import br.com.chalenge.rickmorty.doman.usecase.GetCharacterUseCaseImpl
 import br.com.chalenge.rickmorty.doman.usecase.GetCharactersUseCase
 import br.com.chalenge.rickmorty.doman.usecase.GetCharactersUseCaseImpl
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-class DomainModule {
+abstract class DomainModule {
 
-   @Provides
-   fun providesGetCharactersUseCase(characterRepository: CharacterRepository): GetCharactersUseCase {
-       return GetCharactersUseCaseImpl(characterRepository)
-   }
+    @Binds
+    abstract fun providesGetCharactersUseCase(
+        getCharactersUseCaseImpl: GetCharactersUseCaseImpl
+    ): GetCharactersUseCase
 
-    @Provides
-    fun providesGetCharacterUseCase(characterRepository: CharacterRepository): GetCharacterUseCase {
-        return GetCharacterUseCaseImpl(characterRepository)
-    }
+    @Binds
+    abstract fun providesGetCharacterUseCase(
+        getCharacterUseCaseImpl: GetCharacterUseCaseImpl
+    ): GetCharacterUseCase
 }

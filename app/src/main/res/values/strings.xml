@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">RickMorty</string>
     <string name="species_gender">%s - %s</string>
+    <string name="unexpected_error">Houve um erro inesperado. Tente novamente mais tarde!</string>
+    <string name="http_error">Não foi possivél carregar os dados. Tente novamente mais tarde!</string>
+    <string name="network_error">Você não possui conexão com a internet!</string>
 </resources>
