@@ -18,7 +18,9 @@ class CharacterEntityToModelMapperImpl @Inject constructor(): CharacterEntityToM
             species = from.species,
             type = from.type,
             gender = GenderType.find(from.gender),
-            image = from.image
+            image = from.image,
+            location = from.location,
+            origin = from.origin
         )
     }
 }

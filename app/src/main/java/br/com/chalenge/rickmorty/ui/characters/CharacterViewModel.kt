@@ -31,6 +31,7 @@ class CharacterViewModel @Inject constructor(
         when (event) {
             is CharacterEvent.GetCharacters -> getCharacters()
             is CharacterEvent.OnCharacterSelected -> onCharacterSelected(event.id)
+            is CharacterEvent.OnNavigateToSearch -> onNavigateToSearch()
             is CharacterEvent.OnNavigated -> onNavigated()
         }
     }
@@ -55,6 +56,10 @@ class CharacterViewModel @Inject constructor(
 
     private fun onCharacterSelected(id: Int) {
         _state.update { state -> state.onCharacterSelected(id) }
+    }
+
+    private fun onNavigateToSearch() {
+        _state.update { state -> state.onNavigateToSearch() }
     }
 
     private fun onNavigated() {

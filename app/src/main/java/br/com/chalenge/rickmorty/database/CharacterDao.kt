@@ -8,8 +8,11 @@ import br.com.chalenge.rickmorty.data.entity.CharacterEntity
 
 @Dao
 interface CharacterDao {
-    @Query("SELECT * FROM characters")
-    fun getPagedCharacters(): List<CharacterEntity>
+    @Query("SELECT * FROM characters WHERE :name IS NULL OR name LIKE '%' || :name || '%'")
+    suspend fun getCharacters(name: String?): List<CharacterEntity>
+
+    @Query("SELECT * FROM characters WHERE id = :id ")
+    suspend fun getCharacter(id: Int): CharacterEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveCharacters(characters: List<CharacterEntity>)

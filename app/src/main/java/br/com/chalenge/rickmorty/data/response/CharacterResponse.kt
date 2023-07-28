@@ -7,5 +7,7 @@ data class CharacterResponse(
     val species: String,
     val type: String,
     val gender: String,
-    val image: String
+    val image: String,
+    val origin: OriginResponse,
+    val location: LocationResponse
 )

@@ -27,7 +27,11 @@ class CharaCharacterModelToUiModelMapperImpl @Inject constructor(
                     from.gender.name.capitalizeText()
                 ),
             image = from.image,
-            type = from.type
+            type = from.type,
+            location = resourceManager.getString(R.string.location)
+                .format(from.location),
+            origin = resourceManager.getString(R.string.origin)
+                .format(from.origin)
         )
     }
 

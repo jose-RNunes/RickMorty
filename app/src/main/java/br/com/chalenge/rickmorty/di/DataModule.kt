@@ -1,6 +1,10 @@
 package br.com.chalenge.rickmorty.di
 
 import android.content.Context
+import br.com.chalenge.rickmorty.data.mapper.CharacterEntityToModelMapper
+import br.com.chalenge.rickmorty.data.mapper.CharacterEntityToModelMapperImpl
+import br.com.chalenge.rickmorty.data.mapper.CharacterResponseToEntityMapper
+import br.com.chalenge.rickmorty.data.mapper.CharacterResponseToEntityMapperImpl
 import br.com.chalenge.rickmorty.data.mapper.CharacterResponseToModelMapper
 import br.com.chalenge.rickmorty.data.mapper.CharacterResponseToModelMapperImpl
 import br.com.chalenge.rickmorty.data.mapper.CharacterResultResponseToModelMapper
@@ -33,9 +37,19 @@ abstract class DataModule {
     ): CharacterResponseToModelMapper
 
     @Binds
+    abstract fun providesCCharacterResponseToEntityMapper(
+        characterResponseToEntityMapperImpl: CharacterResponseToEntityMapperImpl
+    ): CharacterResponseToEntityMapper
+
+    @Binds
     abstract fun providesCharacterResultResponseToModelMapper(
         characterResultResponseToModelMapperImpl: CharacterResultResponseToModelMapperImpl
     ): CharacterResultResponseToModelMapper
+
+    @Binds
+    abstract fun providesCharacterEntityToModelMapper(
+        characterEntityToModelMapperImpl: CharacterEntityToModelMapperImpl
+    ): CharacterEntityToModelMapper
 
     @Binds
     abstract fun bindsErrorInterceptor(errorInterceptor: ErrorInterceptorImpl): ErrorInterceptor

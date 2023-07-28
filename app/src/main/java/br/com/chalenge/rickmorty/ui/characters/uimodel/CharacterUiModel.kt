@@ -9,5 +9,7 @@ data class CharacterUiModel(
     val statusColor: Color,
     val species: String,
     val type: String,
-    val image: String
+    val image: String,
+    val origin: String,
+    val location: String
 )

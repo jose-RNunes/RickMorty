@@ -16,7 +16,9 @@ class CharacterResponseToEntityMapperImpl @Inject constructor() : CharacterRespo
             species = from.species,
             type = from.type,
             gender = from.gender,
-            image = from.image
+            image = from.image,
+            location = from.location.name,
+            origin = from.origin.name
         )
     }
 }

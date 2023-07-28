@@ -18,7 +18,9 @@ class CharacterResponseToModelMapperImpl @Inject constructor(): CharacterRespons
             species = from.species,
             type = from.type,
             gender = GenderType.find(from.gender),
-            image = from.image
+            image = from.image,
+            origin = from.origin.name,
+            location = from.location.name
         )
     }
 }

@@ -6,13 +6,13 @@ import javax.inject.Inject
 
 interface GetCharactersUseCase {
 
-    suspend operator fun invoke(page: Int): PageInfoModel
+    suspend operator fun invoke(page: Int, name: String?): PageInfoModel
 }
 
 class GetCharactersUseCaseImpl @Inject constructor(
     private val characterRepository: CharacterRepository
 ) : GetCharactersUseCase {
-    override suspend fun invoke(page: Int): PageInfoModel {
-        return characterRepository.fetchCharacters(page)
+    override suspend fun invoke(page: Int, name: String?): PageInfoModel {
+        return characterRepository.fetchCharacters(page, name)
     }
 }

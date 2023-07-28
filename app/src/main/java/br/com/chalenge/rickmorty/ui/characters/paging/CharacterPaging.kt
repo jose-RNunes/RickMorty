@@ -4,17 +4,21 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import br.com.chalenge.rickmorty.doman.model.CharacterModel
 import br.com.chalenge.rickmorty.doman.usecase.GetCharactersUseCase
+import br.com.chalenge.rickmorty.doman.usecase.GetLocalCharactersUseCase
 import javax.inject.Inject
 
-class CharacterPaging @Inject constructor(private val getCharactersUseCase: GetCharactersUseCase) {
+class CharacterPaging @Inject constructor(
+    private val getCharactersUseCase: GetCharactersUseCase,
+    private val getLocalCharactersUseCase: GetLocalCharactersUseCase
+) {
 
-    fun getCharacters(): PagingSource<Int, CharacterModel> {
+    fun getCharacters(name: String? = null): PagingSource<Int, CharacterModel> {
         return object : PagingSource<Int, CharacterModel>() {
             override suspend fun load(params: LoadParams<Int>): LoadResult<Int, CharacterModel> {
                 return try {
                     val pageNumber = params.key ?: 0
 
-                    val pageInfoModel = getCharactersUseCase(pageNumber)
+                    val pageInfoModel = getCharactersUseCase(pageNumber, name)
 
                     val prevKey = if (pageNumber > 0) pageNumber - 1 else null
                     val nextKey = if (pageInfoModel.next != null) pageNumber + 1 else null
@@ -25,7 +29,16 @@ class CharacterPaging @Inject constructor(private val getCharactersUseCase: GetC
                         nextKey = nextKey
                     )
                 } catch (e: Exception) {
-                    LoadResult.Error(e)
+                    val localCharacters = getLocalCharactersUseCase(name)
+                    if (getLocalCharactersUseCase(name).isNotEmpty()) {
+                        return LoadResult.Page(
+                            data = localCharacters,
+                            prevKey = null,
+                            nextKey = null
+                        )
+                    } else {
+                        LoadResult.Error(e)
+                    }
                 }
             }
 

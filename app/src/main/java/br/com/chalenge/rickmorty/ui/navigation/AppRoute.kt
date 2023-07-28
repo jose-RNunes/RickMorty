@@ -13,5 +13,6 @@ sealed class AppRoute {
 
 enum class ScreenRoute(val route: String) {
     CHARACTER_SCREEN("/characters"),
-    CHARACTER_DETAIL_SCREEN("/detail/{id}")
+    CHARACTER_DETAIL_SCREEN("/detail/{id}"),
+    CHARACTER_SEARCH_SCREEN("/characters/search")
 }

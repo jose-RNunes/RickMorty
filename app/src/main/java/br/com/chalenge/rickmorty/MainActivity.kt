@@ -22,6 +22,9 @@ import androidx.navigation.navArgument
 import br.com.chalenge.rickmorty.ui.character.detail.CharacterDetailEvent
 import br.com.chalenge.rickmorty.ui.character.detail.CharacterDetailScreen
 import br.com.chalenge.rickmorty.ui.character.detail.CharacterDetailViewModel
+import br.com.chalenge.rickmorty.ui.character.search.CharacterSearchEvent
+import br.com.chalenge.rickmorty.ui.character.search.CharacterSearchScreen
+import br.com.chalenge.rickmorty.ui.character.search.CharacterSearchViewModel
 import br.com.chalenge.rickmorty.ui.characters.CharacterEvent
 import br.com.chalenge.rickmorty.ui.characters.CharacterViewModel
 import br.com.chalenge.rickmorty.ui.characters.CharactersScreen
@@ -29,6 +32,7 @@ import br.com.chalenge.rickmorty.ui.navigation.AppRoute
 import br.com.chalenge.rickmorty.ui.navigation.ScreenRoute
 import br.com.chalenge.rickmorty.ui.theme.RickMortyTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -41,14 +45,14 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    navigationApp()
+                    NavigationApp()
                 }
             }
         }
     }
 
     @Composable
-    fun navigationApp() {
+    fun NavigationApp() {
         val navController = rememberNavController()
         NavHost(
             navController = navController,
@@ -56,18 +60,26 @@ class MainActivity : ComponentActivity() {
         ) {
             charactersScreen(navController)
             characterDetailScreen(navController)
+            characterSearchScreen(navController)
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun NavGraphBuilder.charactersScreen(navController: NavHostController) {
         composable(ScreenRoute.CHARACTER_SCREEN.route) {
             val characterViewModel = hiltViewModel<CharacterViewModel>()
 
             val state by characterViewModel.state.collectAsState()
 
-            CharactersScreen(state) { id ->
-                characterViewModel.handleEvent(CharacterEvent.OnCharacterSelected(id))
-            }
+            CharactersScreen(
+                state = state,
+                onCharacterSelected = { id ->
+                    characterViewModel.handleEvent(CharacterEvent.OnCharacterSelected(id))
+                },
+                onSearchSelected = {
+                    characterViewModel.handleEvent(CharacterEvent.OnNavigateToSearch)
+                }
+            )
 
             if (state.navigateToDetail) {
                 characterViewModel.handleEvent(CharacterEvent.OnNavigated)
@@ -77,11 +89,16 @@ class MainActivity : ComponentActivity() {
                 )
             }
 
+            if (state.navigateToSearch) {
+                characterViewModel.handleEvent(CharacterEvent.OnNavigated)
+                navController.navigate(ScreenRoute.CHARACTER_SEARCH_SCREEN.route)
+            }
+
             characterViewModel.handleEvent(CharacterEvent.GetCharacters)
         }
     }
 
-    private fun NavGraphBuilder.characterDetailScreen(navHostController: NavHostController) {
+    private fun NavGraphBuilder.characterDetailScreen(navController: NavHostController) {
         composable(
             ScreenRoute.CHARACTER_DETAIL_SCREEN.route,
             arguments = listOf(navArgument("id") { type = NavType.IntType })
@@ -100,7 +117,37 @@ class MainActivity : ComponentActivity() {
             if (state.showData()) {
                 CharacterDetailScreen(
                     state = state,
-                    onBackClick = { }
+                    onBackClick = { navController.popBackStack() },
+                )
+            }
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun NavGraphBuilder.characterSearchScreen(navController: NavHostController) {
+        composable(
+            ScreenRoute.CHARACTER_SEARCH_SCREEN.route
+        ) {
+            val characterSearchViewModel = hiltViewModel<CharacterSearchViewModel>()
+
+            val state by characterSearchViewModel.state.collectAsState()
+
+            CharacterSearchScreen(
+                state = state,
+                onBackClick = { navController.popBackStack() },
+                onCharacterSelected = { id ->
+                    characterSearchViewModel.handleEvent(CharacterSearchEvent.OnCharacterSelected(id))
+                },
+                onValueChange = { value ->
+                    characterSearchViewModel.handleEvent(CharacterSearchEvent.SearchCharacter(value))
+                }
+            )
+
+            if (state.navigateToDetail) {
+                characterSearchViewModel.handleEvent(CharacterSearchEvent.OnNavigated)
+                val safeCharacterId = state.characterSelectedId ?: 0
+                navController.navigate(
+                    AppRoute.CharacterDetailsScreen(safeCharacterId).getCalculatedRoute()
                 )
             }
         }
