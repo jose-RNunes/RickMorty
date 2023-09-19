@@ -11,10 +11,7 @@ import br.com.chalenge.rickmorty.ui.characters.paging.CharacterPaging
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
@@ -33,16 +30,21 @@ class CharacterViewModel @Inject constructor(
             is CharacterEvent.OnCharacterSelected -> onCharacterSelected(event.id)
             is CharacterEvent.OnNavigateToSearch -> onNavigateToSearch()
             is CharacterEvent.OnNavigated -> onNavigated()
+            is CharacterEvent.OnRetry -> onRetry()
         }
     }
 
     private fun getCharacters() {
         if (_state.value.alreadyStarted) return
 
+        getCharactersInternal()
+    }
+
+    private fun getCharactersInternal() {
         val characters = Pager(
             PagingConfig(
-                pageSize = 20,
-                enablePlaceholders = true,
+                pageSize = MAX_ITEM_PER_PAGE,
+                enablePlaceholders = true
             )
         ) {
             characterPaging.getCharacters()
@@ -64,5 +66,13 @@ class CharacterViewModel @Inject constructor(
 
     private fun onNavigated() {
         _state.update { state -> state.onNavigated() }
+    }
+
+    private fun onRetry() {
+        getCharactersInternal()
+    }
+
+    private companion object {
+        const val MAX_ITEM_PER_PAGE = 20
     }
 }

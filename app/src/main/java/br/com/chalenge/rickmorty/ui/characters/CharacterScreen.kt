@@ -6,14 +6,17 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,7 +39,6 @@ import br.com.chalenge.rickmorty.ui.characters.uimodel.CharacterUiModel
 import coil.compose.AsyncImage
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalCoroutinesApi
 @Composable
@@ -44,7 +46,8 @@ fun CharactersScreen(
     modifier: Modifier = Modifier,
     state: CharacterState,
     onCharacterSelected: (Int) -> Unit,
-    onSearchSelected: () -> Unit
+    onSearchSelected: () -> Unit,
+    onRetryClick: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -63,7 +66,8 @@ fun CharactersScreen(
         CharactersItem(
             modifier = Modifier.padding(paddingValues),
             state = state,
-            onCharacterSelected = onCharacterSelected
+            onCharacterSelected = onCharacterSelected,
+            onRetryClick = onRetryClick
         )
     }
 }
@@ -73,11 +77,10 @@ fun CharactersScreen(
 fun CharactersItem(
     modifier: Modifier = Modifier,
     state: CharacterState,
-    onCharacterSelected: (Int) -> Unit
+    onCharacterSelected: (Int) -> Unit,
+    onRetryClick: () -> Unit
 ) {
     val characters = state.characters?.collectAsLazyPagingItems() ?: return
-
-    CharacterLoadItem(characters.loadState.refresh)
 
     LazyColumn(modifier = modifier) {
         items(characters.itemCount) { index ->
@@ -91,13 +94,15 @@ fun CharactersItem(
             }
         }
     }
+
+    CharacterLoadItem(characters.loadState.refresh, onRetryClick)
 }
 
 @Composable
 fun CharacterItem(
     modifier: Modifier = Modifier,
     character: CharacterUiModel,
-    onCharacterSelected: (Int) -> Unit,
+    onCharacterSelected: (Int) -> Unit
 ) {
     Card(
         modifier = modifier
@@ -123,7 +128,10 @@ fun CharacterItem(
 }
 
 @Composable
-fun CharacterLoadItem(loadState: LoadState) {
+fun CharacterLoadItem(
+    loadState: LoadState,
+    onRetryClick: () -> Unit
+) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier.fillMaxSize()
@@ -133,7 +141,15 @@ fun CharacterLoadItem(loadState: LoadState) {
         }
 
         if (loadState is LoadState.Error) {
-            Text(text = (loadState as? LoadState.Error)?.error?.message.orEmpty())
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(text = (loadState as? LoadState.Error)?.error?.message.orEmpty())
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Button(onClick = { onRetryClick.invoke() }) {
+                    Text(text = stringResource(id = R.string.retry_action))
+                }
+            }
         }
     }
 }

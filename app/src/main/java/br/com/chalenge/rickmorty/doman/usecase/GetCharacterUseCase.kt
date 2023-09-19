@@ -14,6 +14,6 @@ class GetCharacterUseCaseImpl @Inject constructor(
 ) : GetCharacterUseCase {
 
     override suspend fun invoke(id: Int): CharacterModel {
-        return characterRepository.fetchCharacter(id)
+        return characterRepository.getCharacter(id)
     }
 }

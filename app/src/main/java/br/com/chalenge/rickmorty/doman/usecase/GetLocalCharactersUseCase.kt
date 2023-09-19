@@ -7,13 +7,13 @@ import javax.inject.Inject
 
 interface GetLocalCharactersUseCase {
 
-    suspend operator fun invoke(name: String?): List<CharacterModel>
+    suspend operator fun invoke(name: String?, status: String?): List<CharacterModel>
 }
 
 class GetLocalCharactersUseCaseImpl @Inject constructor(
     private val characterRepository: CharacterRepository
 ) : GetLocalCharactersUseCase {
-    override suspend fun invoke(name: String?): List<CharacterModel> {
-        return characterRepository.getCharacters(name)
+    override suspend fun invoke(name: String?, status: String?): List<CharacterModel> {
+        return characterRepository.getCharacters(name, status)
     }
 }

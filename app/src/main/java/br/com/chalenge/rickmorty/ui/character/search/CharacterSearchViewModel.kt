@@ -34,6 +34,8 @@ class CharacterSearchViewModel @Inject constructor(
             is CharacterSearchEvent.SearchCharacter -> getCharacters(event.searchCharacter)
             is CharacterSearchEvent.OnCharacterSelected -> onCharacterSelected(event.id)
             is CharacterSearchEvent.OnNavigated -> onNavigated()
+            is CharacterSearchEvent.OnRetry -> getCharacters(state.value.characterSearch)
+            is CharacterSearchEvent.OnStatusSelected -> onStatusSelected(event.status)
         }
     }
 
@@ -41,14 +43,14 @@ class CharacterSearchViewModel @Inject constructor(
         job?.cancel()
         job = viewModelScope.launch {
             _state.update { state -> state.setCharacterSearch(searchCharacter) }
-            if (searchCharacter.length > 3) delay(500)
+            if (searchCharacter.length > SEARCH_MIN_LENGTH) delay(DELAY_TIME)
             val characters = Pager(
                 PagingConfig(
-                    pageSize = 20,
+                    pageSize = MAX_ITEM_PER_PAGE,
                     enablePlaceholders = true,
                 )
             ) {
-                characterPaging.getCharacters(searchCharacter)
+                characterPaging.getCharacters(searchCharacter, state.value.onStatusSelected)
             }.flow
                 .map { paging ->
                     paging.map { model -> characterModelToUiModelMapper.converter(model) }
@@ -63,5 +65,18 @@ class CharacterSearchViewModel @Inject constructor(
 
     private fun onNavigated() {
         _state.update { state -> state.onNavigated() }
+    }
+
+    private fun onStatusSelected(status: String?) {
+        if (status != null) {
+            _state.update { state -> state.onStatusSelected(status) }
+            getCharacters(state.value.characterSearch)
+        }
+    }
+
+    private companion object {
+        const val MAX_ITEM_PER_PAGE = 20
+        const val DELAY_TIME = 500L
+        const val SEARCH_MIN_LENGTH = 3
     }
 }

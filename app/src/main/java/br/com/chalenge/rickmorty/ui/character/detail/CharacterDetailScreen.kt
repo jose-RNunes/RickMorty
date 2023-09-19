@@ -77,12 +77,10 @@ fun CharacterDetailItem(
     }
     Box(modifier = Modifier.fillMaxWidth()) {
         Surface(
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(8.dp),
+            modifier = Modifier.align(Alignment.TopStart),
             shape = CircleShape
         ) {
-            IconButton(onClick = onBackClick, modifier = Modifier.padding(4.dp)) {
+            IconButton(onClick = onBackClick) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "navigate back"

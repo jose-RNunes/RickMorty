@@ -78,6 +78,9 @@ class MainActivity : ComponentActivity() {
                 },
                 onSearchSelected = {
                     characterViewModel.handleEvent(CharacterEvent.OnNavigateToSearch)
+                },
+                onRetryClick = {
+                    characterViewModel.handleEvent(CharacterEvent.OnRetry)
                 }
             )
 
@@ -140,6 +143,12 @@ class MainActivity : ComponentActivity() {
                 },
                 onValueChange = { value ->
                     characterSearchViewModel.handleEvent(CharacterSearchEvent.SearchCharacter(value))
+                },
+                onRetryClick = {
+                    characterSearchViewModel.handleEvent(CharacterSearchEvent.OnRetry)
+                },
+                onStatusSelected = { status ->
+                    characterSearchViewModel.handleEvent(CharacterSearchEvent.OnStatusSelected(status))
                 }
             )
 

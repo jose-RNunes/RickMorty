@@ -6,4 +6,8 @@ sealed interface CharacterSearchEvent {
     data class OnCharacterSelected(val id: Int) : CharacterSearchEvent
 
     object OnNavigated : CharacterSearchEvent
+
+    object OnRetry: CharacterSearchEvent
+
+    data class OnStatusSelected(val status: String?): CharacterSearchEvent
 }

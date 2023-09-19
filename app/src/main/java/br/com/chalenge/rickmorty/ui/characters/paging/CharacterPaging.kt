@@ -12,13 +12,13 @@ class CharacterPaging @Inject constructor(
     private val getLocalCharactersUseCase: GetLocalCharactersUseCase
 ) {
 
-    fun getCharacters(name: String? = null): PagingSource<Int, CharacterModel> {
+    fun getCharacters(name: String? = null, status: String? = null): PagingSource<Int, CharacterModel> {
         return object : PagingSource<Int, CharacterModel>() {
             override suspend fun load(params: LoadParams<Int>): LoadResult<Int, CharacterModel> {
                 return try {
                     val pageNumber = params.key ?: 0
 
-                    val pageInfoModel = getCharactersUseCase(pageNumber, name)
+                    val pageInfoModel = getCharactersUseCase(pageNumber, name, status)
 
                     val prevKey = if (pageNumber > 0) pageNumber - 1 else null
                     val nextKey = if (pageInfoModel.next != null) pageNumber + 1 else null
@@ -29,8 +29,8 @@ class CharacterPaging @Inject constructor(
                         nextKey = nextKey
                     )
                 } catch (e: Exception) {
-                    val localCharacters = getLocalCharactersUseCase(name)
-                    if (getLocalCharactersUseCase(name).isNotEmpty()) {
+                    val localCharacters = getLocalCharactersUseCase(name, status)
+                    if (getLocalCharactersUseCase(name, status).isNotEmpty()) {
                         return LoadResult.Page(
                             data = localCharacters,
                             prevKey = null,

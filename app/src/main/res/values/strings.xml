@@ -9,4 +9,7 @@
     <string name="origin">Origem: %s</string>
     <string name="location">Location: %s</string>
     <string name="species_gender">%s - %s</string>
+
+    <string name="retry_action">Tentar novamente</string>
+    <string name="all_status">Todos</string>
 </resources>

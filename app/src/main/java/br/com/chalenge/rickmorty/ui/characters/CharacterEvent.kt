@@ -9,4 +9,6 @@ sealed interface CharacterEvent {
     object OnNavigateToSearch: CharacterEvent
 
     object OnNavigated: CharacterEvent
+
+    object OnRetry: CharacterEvent
 }
